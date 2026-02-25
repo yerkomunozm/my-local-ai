@@ -1,6 +1,7 @@
 # Local AI Chat
 
 Aplicación web (React + Vite) para chatear con modelos locales vía Ollama.
+Incluye backend local con LevelDB para persistir memoria de perfil y chats.
 
 ## Prerrequisitos
 
@@ -62,7 +63,11 @@ npm install
 npm run dev
 ```
 
-La app corre en `http://localhost:8080` (o el puerto que indique Vite).
+Servicios locales:
+- Frontend (Vite): `http://localhost:8080`
+- Memory API (Express + LevelDB): `http://localhost:8787`
+
+La base de datos se guarda en `./data/memory-db`.
 
 ## Configuración de la app
 
@@ -75,6 +80,14 @@ Puedes listar modelos instalados con:
 ```bash
 ollama list
 ```
+
+## Memoria persistente
+
+- `user_profile` (keyspace): perfil del usuario (`profile:default`)
+- `chat_memory` (keyspace): chats completos (`chat:{id}`)
+- Índice de chats: `chat_index:{...}` para listado ordenado por `updatedAt`
+
+Al primer arranque, si existen conversaciones en `localStorage`, se migran una sola vez a LevelDB.
 
 ## Stack
 

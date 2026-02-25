@@ -8,6 +8,7 @@ interface ChatSidebarProps {
   onNew: () => void;
   onDelete: (id: string) => void;
   onOpenSettings: () => void;
+  disabled?: boolean;
 }
 
 export function ChatSidebar({
@@ -17,12 +18,14 @@ export function ChatSidebar({
   onNew,
   onDelete,
   onOpenSettings,
+  disabled,
 }: ChatSidebarProps) {
   return (
     <div className="flex h-full w-64 flex-col bg-sidebar border-r border-sidebar-border">
       <div className="p-3">
         <button
           onClick={onNew}
+          disabled={disabled}
           className="flex w-full items-center gap-2 rounded-lg border border-sidebar-border px-3 py-2.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
         >
           <Plus className="w-4 h-4" />
@@ -46,9 +49,11 @@ export function ChatSidebar({
             <button
               onClick={(e) => {
                 e.stopPropagation();
+                if (disabled) return;
                 onDelete(conv.id);
               }}
-              className="opacity-0 group-hover:opacity-100 p-1 hover:text-destructive transition-all"
+              disabled={disabled}
+              className="opacity-0 group-hover:opacity-100 p-1 hover:text-destructive transition-all disabled:opacity-40"
             >
               <Trash2 className="w-3 h-3" />
             </button>

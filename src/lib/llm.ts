@@ -1,7 +1,8 @@
 export type Message = {
   id: string;
-  role: "user" | "assistant";
+  role: "user" | "assistant" | "system";
   content: string;
+  ts?: number;
 };
 
 export type Conversation = {
