@@ -119,7 +119,7 @@ const Index = () => {
 
     const id = generateId();
     const now = Date.now();
-    const created = await createChat({ id, title: "New Chat", createdAt: now });
+    const created = await createChat({ id, title: "Tema pendiente", createdAt: now });
     setConversations((prev) => upsertAndSort(prev, toUIConversation(created)));
     setActiveId(id);
     setSidebarOpen(false);
@@ -149,7 +149,7 @@ const Index = () => {
       const now = Date.now();
       const created = await createChat({
         id,
-        title: content.slice(0, 40) + (content.length > 40 ? "..." : ""),
+        title: "Tema pendiente",
         createdAt: now,
       });
       setConversations((prev) => upsertAndSort(prev, toUIConversation(created)));
@@ -168,12 +168,16 @@ const Index = () => {
 
     updateConversation(convId, (c) => ({
       ...c,
-      title: c.messages.length === 0 ? content.slice(0, 40) + (content.length > 40 ? "..." : "") : c.title,
       updatedAt: Date.now(),
       messages: [...c.messages, userMsg, assistantMsg],
     }));
 
-    await appendChatMessages(convId, [userMsg]);
+    const persistedAfterUser = await appendChatMessages(convId, [userMsg]);
+    updateConversation(convId, (c) => ({
+      ...c,
+      title: persistedAfterUser.title,
+      updatedAt: persistedAfterUser.updatedAt,
+    }));
 
     setIsLoading(true);
     const controller = new AbortController();

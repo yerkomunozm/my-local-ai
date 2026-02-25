@@ -21,6 +21,28 @@ function toSummary(chat: MemoryChat): ChatSummary {
   };
 }
 
+function generateChatTitleFromMessage(content: string): string {
+  const cleaned = content
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/[#>*_`~[\]()]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!cleaned) return "Conversacion general";
+
+  const firstChunk = cleaned.split(/[.!?\n]/)[0]?.trim() || cleaned;
+  const maxLen = 60;
+
+  if (firstChunk.length <= maxLen) return firstChunk;
+
+  const shortened = firstChunk.slice(0, maxLen);
+  const lastSpace = shortened.lastIndexOf(" ");
+  if (lastSpace > 20) {
+    return `${shortened.slice(0, lastSpace)}...`;
+  }
+  return `${shortened}...`;
+}
+
 export function createChatRepo(
   chatMemoryDb: {
     get: (key: string) => Promise<MemoryChat>;
@@ -58,8 +80,14 @@ export function createChatRepo(
     const existing = await getChat(chatId);
     if (!existing) return null;
 
+    const hadUserMessages = existing.messages.some((m) => m.role === "user");
+    const firstIncomingUser = messages.find((m) => m.role === "user" && m.content.trim().length > 0);
+
     const next: MemoryChat = {
       ...existing,
+      title: !hadUserMessages && firstIncomingUser
+        ? generateChatTitleFromMessage(firstIncomingUser.content)
+        : existing.title,
       updatedAt: Date.now(),
       messages: [...existing.messages, ...messages],
     };

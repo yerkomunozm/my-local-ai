@@ -50,6 +50,7 @@ describe("memory api", () => {
     const chat = await request(app).get("/api/chats/chat-1").expect(200);
 
     expect(chat.body.id).toBe("chat-1");
+    expect(chat.body.title).toBe("Hola");
     expect(chat.body.messages).toHaveLength(2);
     expect(chat.body.messages[0].content).toBe("Hola");
     expect(chat.body.messages[1].content).toBe("Hola!");
